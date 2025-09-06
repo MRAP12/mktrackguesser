@@ -43,6 +43,7 @@
       border: 0px solid white;
       border-radius: 8px;
       margin-top: 20px;
+      background: rgba(0,0,0,0.2);
     }
     input, button {
       padding: 10px;
@@ -102,143 +103,105 @@
       text-shadow: 1px 1px 2px #000;
     }
   </style>
-  <script>
-    const validTracks = [
-      "SNES Mario Circuit 1",
-      "SNES Donut Plains 1",
-      "SNES Ghost Valley 1",
-      "SNES Bowser Castle 1",
-      "SNES Mario Circuit 2",
-      "SNES Choco Island 1",
-      "SNES Ghost Valley 2",
-      "SNES Donut Plains 2",
-      "SNES Bowser Castle 2",
-      "SNES Mario Circuit 3",
-      "SNES Koopa Beach 1",
-      "SNES Choco Island 2",
-      "SNES Vanilla Lake 1",
-      "SNES Bowser Castle 3",
-      "SNES Mario Circuit 4",
-      "SNES Donut Plains 3",
-      "SNES Koopa Beach 2",
-      "SNES Ghost Valley 3",
-      "SNES Vanilla Lake 2",
-      "SNES Rainbow Road",
-      // ... add more tracks as needed
-      "N64 Luigi Raceway",
-      "N64 Moo Moo Farm",
-      "N64 Koopa Troopa Beach",
-      "N64 Kalimari Desert",
-      "N64 Toad's Turnpike",
-      "N64 Frappe Snowland",
-      "N64 Choco Mountain",
-      "N64 Mario Raceway",
-      "N64 Wario Stadium",
-      "N64 Sherbet Land",
-      "N64 Royal Raceway",
-      "N64 Bowser's Castle",
-      "N64 DK's Jungle Parkway",
-      "N64 Yoshi Valley",
-      "N64 Banshee Boardwalk",
-      "N64 Rainbow Road"
-      "GBA Peach Circuit",
-      "GBA Shy Guy Beach",
-      "GBA Riverside Park",
-      "GBA Bowser Castle 1",
-      "GBA Mario Circuit",
-      "GBA Boo Lake",
-      "GBA Cheese Land",
-      "GBA Bowser Castle 2",
-      "GBA Luigi Circuit",
-      "GBA Sky Garden",
-      "GBA Cheep-Cheep Island",
-      "GBA Sunset Wilds",
-      "GBA Snow Land",
-      "GBA Ribbon Road",
-      "GBA Yoshi Desert",
-      "GBA Bowser Castle 3",
-      "GBA Lakeside Park",
-      "GBA Broken Pier",
-      "GBA Bowser Castle 4",
-      "GBA Rainbow Road",
-      "GCN Luigi Circuit",
-      "GCN Peach Beach",
-      "GCN Baby Park",
-      "GCN Dry Dry Desert",
-      "GCN Mushroom Bridge",
-      "GCN Mario Circuit",
-      "GCN Daisy Cruiser",
-      "GCN Waluigi Stadium",
-      "GCN Sherbet Land",
-      "GCN Mushroom City",
-      "GCN Yoshi Circuit",
-      "GCN DK Mountain",
-      "GCN Wario Colosseum",
-      "GCN Dino Dino Jungle",
-      "GCN Bowser's Castle",
-      "GCN Rainbow Road",
-      "DS Figure 8 Circuit",
-      "DS Yoshi Falls",
-      "DS Cheep Cheep Beach",
-      "DS Luigi's Mansion",
-      "DS Desert Hills",
-      "DS Delfino Square",
-      "DS Waluigi Pinball",
-      "DS Shroom Ridge",
-      "DS DK Pass",
-      "DS Tick-Tock Clock",
-      "DS Mario Circuit",
-      "DS Airship Fortress",
-      "DS Wario Stadium",
-      "DS Peach Gardens",
-      "DS Bowser Castle",
-      "DS Rainbow Road",
-      "Wii Luigi Circuit",
-      "Wii Moo Moo Meadows",
-      "Wii Mushroom Gorge",
-      "Wii Toad's Factory",
-      "Wii Mario Circuit",
-      "Wii Coconut Mall",
-      "Wii DK Summit",
-      "Wii Wario's Gold Mine",
-      "Wii Daisy Circuit",
-      "Wii Koopa Cape",
-      "Wii Maple Treeway",
-      "Wii Grumble Volcano",
-      "Wii Dry Dry Ruins",
-      "Wii Moonview Highway",
-      "Wii Bowser's Castle",
-      "Wii Rainbow Road",
-      "3DS Toad Circuit",
-      "3DS Daisy Hills",
-      "3DS Cheep Cheep Lagoon",
-      "3DS Shy Guy Bazaar",
-      "3DS Wuhu Loop",
-      "3DS Mario Circuit",
-      "3DS Music Park",
-      "3DS Rock Rock Mountain",
-      "3DS Piranha Plant Slide",
-      "3DS Wario's Shipyard",
-      "3DS Neo Bowser City",
-      "3DS Maka Wuhu",
-      "3DS DK Jungle",
-      "3DS Rosalina's Ice World",
-      "3DS Bowser's Castle",
-      "3DS Rainbow Road"
-    ];
+</head>
+<body>
+  <nav>
+    <a href="#" class="active">Main</a>
+    <a href="#">Mario Kart 8 Deluxe</a>
+    <a href="#">Update Plans</a>
+  </nav>
 
+  <h1>Guess the Mario Kart Track!</h1>
+  <!-- The track image will be set by JS -->
+  <img id="track-image" src="" alt="Track Outline" width="300">
+
+  <br><br>
+
+  <input type="text" id="guess" placeholder="Enter your guess here..." list="track-list" autocomplete="on">
+  <datalist id="track-list"></datalist>
+
+  <br><br>
+  <button onclick="submitGuess()">Submit</button>
+  <p id="result"></p>
+  <button id="play-again-btn" onclick="resetGame()">🔁 Play Again</button>
+
+  <div id="guess-history">
+    <h3>Guesses:</h3>
+    <ul id="history-list"></ul>
+  </div>
+
+  <div id="credit">By MRAP12</div>
+
+  <script>
+    // Copy of your TRACKS dict from app.py
+    const TRACKS = {
+      'track0001.png': 'SNES Mario Circuit 1',
+      'track0002.png': 'SNES Donut Plains 1',
+      'track0003.png': 'SNES Ghost Valley 1',
+      'track0005.png': 'SNES Mario Circuit 2',
+      'track0006.png': 'SNES Choco Island 1',
+      'track0007.png': 'SNES Ghost Valley 2',
+      'track0008.png': 'SNES Donut Plains 2',
+      'track0010.png': 'SNES Mario Circuit 3',
+      'track0012.png': 'SNES Choco Island 2',
+      'track0013.png': 'SNES Vanilla Lake 1',
+      'track0017.png': 'SNES Koopa Beach 2',
+      'track0019.png': 'SNES Vanilla Lake 2',
+      'track0020.png': 'SNES Rainbow Road',
+      'track0021.png': 'N64 Luigi Raceway',
+      'track0023.png': 'N64 Koopa Troopa Beach',
+      'track0024.png': 'N64 Kalimari Desert',
+      'track0026.png': 'N64 Frappe Snowland',
+      'track0027.png': 'N64 Choco Mountain',
+      'track0028.png': 'N64 Mario Raceway',
+      'track0031.png': 'N64 Royal Raceway',
+      'track0034.png': 'N64 Yoshi Valley',
+      'track0037.png': 'GBA Peach Circuit',
+      'track0039.png': 'GBA Riverside Park',
+      'track0040.png': 'GBA Bowser Castle 1',
+      'track0042.png': 'GBA Boo Lake',
+      'track0044.png': 'GBA Bowser Castle 2',
+      'track0045.png': 'GBA Luigi Circuit',
+      'track0046.png': 'GBA Sky Garden',
+      'track0047.png': 'GBA Cheep-Cheep Island',
+      'track0048.png': 'GBA Sunset Wilds',
+      'track0049.png': 'GBA Snow Land',
+      'track0051.png': 'GBA Yoshi Desert',
+      'track0052.png': 'GBA Bowser Castle 3',
+      'track0053.png': 'GBA Lakeside Park',
+      'track0055.png': 'GBA Bowser Castle 4',
+      'track0059.png': 'GCN Baby Park',
+      'track0061.png': 'GCN Mushroom Bridge',
+      'track0063.png': 'GCN Daisy Cruiser',
+      'track0064.png': 'GCN Waluigi Stadium',
+      'track0067.png': 'GCN Yoshi Circuit',
+    };
+
+    // Turn TRACKS into an array of image filenames
+    const trackImages = Object.keys(TRACKS);
+    const trackNames = Object.values(TRACKS);
+
+    let currentTrackImage = "";
+    let currentTrackName = "";
     let guessCount = 0;
     const MAX_GUESSES = 6;
-    let answerTrack = validTracks[Math.floor(Math.random() * validTracks.length)];
 
-    document.addEventListener('DOMContentLoaded', () => {
-      guessCount = 0;
-      loadHistory();
-      populateDatalist();
-      document.getElementById('play-again-btn').style.display = 'none';
-      document.getElementById('result').innerText = '';
-      document.getElementById('history-list').innerHTML = '';
-    });
+    function randomTrack() {
+      const idx = Math.floor(Math.random() * trackImages.length);
+      currentTrackImage = trackImages[idx];
+      currentTrackName = TRACKS[currentTrackImage];
+      document.getElementById('track-image').src = "images/" + currentTrackImage;
+    }
+
+    function populateDatalist() {
+      const datalist = document.getElementById('track-list');
+      datalist.innerHTML = '';
+      trackNames.forEach(track => {
+        const option = document.createElement('option');
+        option.value = track;
+        datalist.appendChild(option);
+      });
+    }
 
     function submitGuess() {
       if (guessCount >= MAX_GUESSES) {
@@ -249,15 +212,15 @@
       const guessInput = document.getElementById('guess');
       const guess = guessInput.value.trim();
 
-      if (!validTracks.includes(guess)) {
+      if (!trackNames.includes(guess)) {
         alert("❌ Invalid track name. Please choose a valid Mario Kart track.");
         return;
       }
 
-      let correct = (guess === answerTrack);
+      let correct = (guess === currentTrackName);
 
       document.getElementById('result').innerText = correct ?
-          "✅ Correct! It's " + answerTrack :
+          "✅ Correct! It's " + currentTrackName :
           "❌ Wrong guess. Try again!";
 
       guessCount++;
@@ -295,55 +258,23 @@
     }
 
     function resetGame() {
-      answerTrack = validTracks[Math.floor(Math.random() * validTracks.length)];
       guessCount = 0;
       localStorage.removeItem('mkGuesses');
       document.getElementById('history-list').innerHTML = '';
       document.getElementById('result').innerText = '';
       document.getElementById('play-again-btn').style.display = 'none';
-      // Optionally, randomize the image if you have several images
-      // document.querySelector('img').src = "images/track-outline.png";
+      randomTrack();
     }
 
-    function populateDatalist() {
-      const datalist = document.getElementById('track-list');
-      datalist.innerHTML = '';
-      validTracks.forEach(track => {
-        const option = document.createElement('option');
-        option.value = track;
-        datalist.appendChild(option);
-      });
-    }
+    document.addEventListener('DOMContentLoaded', () => {
+      guessCount = 0;
+      loadHistory();
+      populateDatalist();
+      document.getElementById('play-again-btn').style.display = 'none';
+      document.getElementById('result').innerText = '';
+      document.getElementById('history-list').innerHTML = '';
+      randomTrack();
+    });
   </script>
-</head>
-<body>
-  <nav>
-    <a href="#" class="active">Main</a>
-    <!-- These links are placeholders. Add actual pages if you want them to work. -->
-    <a href="#">Mario Kart 8 Deluxe</a>
-    <a href="#">Update Plans</a>
-  </nav>
-
-  <h1>Guess the Mario Kart Track!</h1>
-
-  <!-- Replace 'track-outline.png' with your actual image file in 'images' folder -->
-  <img src="images/track-outline.png" alt="Track Outline" width="300">
-
-  <br><br>
-
-  <input type="text" id="guess" placeholder="Enter your guess here..." list="track-list" autocomplete="on">
-  <datalist id="track-list"></datalist>
-
-  <br><br>
-  <button onclick="submitGuess()">Submit</button>
-  <p id="result"></p>
-  <button id="play-again-btn" onclick="resetGame()">🔁 Play Again</button>
-
-  <div id="guess-history">
-    <h3>Guesses:</h3>
-    <ul id="history-list"></ul>
-  </div>
-
-  <div id="credit">By MRAP12</div>
 </body>
 </html>
