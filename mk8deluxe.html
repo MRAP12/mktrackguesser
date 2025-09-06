@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MK8 Deluxe Track Guesser</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+      font-family: 'Lexend', sans-serif;
+      color: white;
+      background: url('/static/images2/background.jpg') center/cover no-repeat;
+    }
+
+    h1 {
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.6);
+      padding: 15px 0;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      font-size: 18px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px #000;
+      padding-bottom: 5px;
+      border-bottom: 2px solid transparent;
+    }
+
+    nav a.active {
+      border-bottom-color: white;
+    }
+
+    img {
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+
+    input, button {
+      margin-top: 20px;
+      padding: 10px;
+      font-size: 16px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: 1px solid white;
+      border-radius: 5px;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    #guess-history {
+      margin: 30px auto 0;
+      max-width: 500px;
+      background: rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: left;
+    }
+
+    #guess-history h3 {
+      margin-bottom: 10px;
+    }
+
+    #history-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    #history-list li {
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .correct {
+      color: lightgreen;
+    }
+
+    .wrong {
+      color: salmon;
+    }
+
+    #play-again-btn {
+      display: none;
+      margin-top: 20px;
+      background: rgba(0,128,0,0.5);
+      border: 1px solid white;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #credit {
+      position: fixed;
+      right: 15px;
+      bottom: 10px;
+      font-size: 30px;
+      text-shadow: 1px 1px 2px #000;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Main</a>
+    <a href="/mk8deluxe" class="active">Mario Kart 8 Deluxe</a>
+    <a href="/info">Update Plans</a>
+  </nav>
+
+  <h1>Guess the MK8 Deluxe Track!</h1>
+  <!-- server will fill in the initial image name -->
+  <img id="track-img" src="/static/images2/{{ image }}" alt="Track Outline" width="300">
+
+  <br><br>
+
+  <input
+    type="text"
+    id="guess"
+    placeholder="Enter your guess here..."
+    list="track-list"
+    autocomplete="on"
+  >
+  <datalist id="track-list"></datalist>
+
+  <br><br>
+  <button type="button" onclick="submitGuess()">Submit</button>
+  <p id="result"></p>
+  <button type="button" id="play-again-btn" onclick="resetGame()">🔁 Play Again</button>
+
+  <div id="guess-history">
+    <h3>Guesses:</h3>
+    <ul id="history-list"></ul>
+  </div>
+
+  <div id="credit">By MRAP12</div>
+
+  <script>
+    // Deluxe track list
+    const validTracks = [
+      "Mario Kart Stadium", "Water Park", "Sweet Sweet Canyon", "Thwomp Ruins",
+      "Mario Circuit", "Toad Harbour", "Twisted Mansion", "Shy Guy Falls",
+      "Sunshine Airport", "Dolphin Shoals", "Electrodrome", "Mount Wario",
+      "Cloudtop Cruise", "Bone Dry Dunes", "Bowser's Castle", "Rainbow Road",
+      "GCN Yoshi Circuit", "Excitebike Arena", "Dragon Driftway", "Mute City",
+      "GCN Baby Park", "GBA Cheese Land", "Wild Woods", "Animal Crossing",
+      "Wii Moo Moo Meadows", "GBA Mario Circuit", "DS Cheep Cheep Beach",
+      "N64 Toad's Turnpike", "GCN Dry Dry Desert", "SNES Donut Plains 3",
+      "N64 Royal Raceway", "3DS DK Jungle", "DS Wario Stadium", "GCN Sherbet Land",
+      "3DS Music Park", "N64 Yoshi Valley", "DS Tick-Tock Clock",
+      "3DS Piranha Plant Pipeway", "Wii Grumble Volcano", "N64 Rainbow Road",
+      "Wii Wario's Gold Mine", "SNES Rainbow Road", "Ice Ice Outpost",
+      "Hyrule Circuit", "3DS Neo Koopa City", "GBA Ribbon Road",
+      "Super Bell Subway", "Big Blue", "Tour Paris Promenade",
+      "3DS Toad Circuit", "N64 Choco Mountain", "Wii Coconut Mall"
+    ];
+
+    let guessCount = 0;
+    const MAX_GUESSES = 6;
+    const STORAGE_KEY = 'mk8dGuesses';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadHistory();
+      populateDatalist();
+    });
+
+    function populateDatalist() {
+      const dl = document.getElementById('track-list');
+      dl.innerHTML = '';
+      validTracks.forEach(track => {
+        const opt = document.createElement('option');
+        opt.value = track;
+        dl.appendChild(opt);
+      });
+    }
+
+    async function submitGuess() {
+      if (guessCount >= MAX_GUESSES) {
+        alert("❌ You've reached the maximum number of guesses!");
+        return;
+      }
+
+      const input = document.getElementById('guess');
+      const guess = input.value.trim();
+      if (!validTracks.includes(guess)) {
+        alert("❌ Invalid track name. Please choose a valid MK8 Deluxe track.");
+        return;
+      }
+
+      const res = await fetch('/mk8deluxe/guess', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guess })
+      });
+      const result = await res.json();
+
+      document.getElementById('result').innerText = result.correct
+        ? "✅ Correct! It's " + result.track
+        : "❌ Wrong guess. Try again!";
+
+      guessCount++;
+      addToHistory(guess, result.correct);
+
+      if (result.correct || guessCount >= MAX_GUESSES) {
+        document.getElementById('play-again-btn').style.display = 'inline-block';
+      }
+
+      input.value = '';
+    }
+
+    function addToHistory(guess, isCorrect) {
+      const list = document.getElementById('history-list');
+      const li = document.createElement('li');
+      li.textContent = `Guess ${guessCount}: ${guess} ${isCorrect ? '✅' : '❌'}`;
+      li.className = isCorrect ? 'correct' : 'wrong';
+      list.appendChild(li);
+
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      stored.push({ guess, correct: isCorrect, number: guessCount });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+    }
+
+    function loadHistory() {
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const list = document.getElementById('history-list');
+      list.innerHTML = '';
+      stored.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = `Guess ${entry.number}: ${entry.guess} ${entry.correct ? '✅' : '❌'}`;
+        li.className = entry.correct ? 'correct' : 'wrong';
+        list.appendChild(li);
+      });
+    }
+
+    // <--- Updated resetGame: fetch the new image name and update the <img> src dynamically --->
+    async function resetGame() {
+      const res = await fetch('/mk8deluxe/new-round', { method: 'POST' });
+      if (!res.ok) {
+        console.error('Failed to start a new round:', res.statusText);
+        return;
+      }
+
+      const data = await res.json();
+      // reset counters & UI
+      guessCount = 0;
+      localStorage.removeItem(STORAGE_KEY);
+      document.getElementById('history-list').innerHTML = '';
+      document.getElementById('result').innerText = '';
+      document.getElementById('play-again-btn').style.display = 'none';
+      document.getElementById('guess').value = '';
+
+      // swap in the new track outline
+      document.getElementById('track-img').src = '/static/images2/' + data.image;
+    }
+  </script>
+</body>
+</html>

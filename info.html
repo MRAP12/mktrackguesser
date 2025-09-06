@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Plans</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+  <style>
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+      font-family: 'Lexend', sans-serif;
+      color: white;
+      background: url('/static/images3/background.jpg') center/cover no-repeat;
+    }
+
+    h1 {
+      text-shadow: 2px 2px 4px #000;
+      margin-bottom: 30px;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.6);
+      padding: 15px 0;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      font-size: 18px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px #000;
+      padding-bottom: 5px;
+      border-bottom: 2px solid transparent;
+    }
+
+    nav a.active {
+      border-bottom-color: white;
+    }
+
+    #update-box {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: left;
+    }
+
+    #update-box h2 {
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    #update-content {
+      white-space: pre-wrap;
+      font-size: 20px;
+    }
+
+    #credit {
+      position: fixed;
+      right: 15px;
+      bottom: 10px;
+      font-size: 30px;
+      text-shadow: 1px 1px 2px #000;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/">Main</a>
+    <a href="/mk8deluxe">Mario Kart 8 Deluxe</a>
+    <a href="/" class="active">Update Plans</a>
+  </nav>
+
+  <h1>Mario Kart Track Guesser Update Plans</h1>
+
+  <div id="update-box">
+    <h2>Latest Plans</h2>
+    <div id="update-content">
+      • Add other Mario Kart games 🎮  
+      • Improve UI on mobile 📱  
+      • Add player stats 📊
+      • Customization options for users 🎨
+    </div>
+  </div>
+
+  <div id="credit">By MRAP12</div>
+</body>
+</html>
