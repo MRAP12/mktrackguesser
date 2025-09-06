@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" type="image/png" href="images2/favicon.png">
   <title>MK8 Deluxe Track Guesser</title>
   <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
   <style>
@@ -11,7 +12,7 @@
       text-align: center;
       font-family: 'Lexend', sans-serif;
       color: white;
-      background: url('/static/images2/background.jpg') center/cover no-repeat;
+      background: url('images2/background.jpg') center/cover no-repeat;
     }
 
     h1 {
@@ -46,6 +47,9 @@
     img {
       margin-top: 20px;
       border-radius: 8px;
+      box-shadow: 0 2px 12px #0006;
+      background: #222;
+      max-width: 95vw;
     }
 
     input, button {
@@ -117,14 +121,13 @@
 </head>
 <body>
   <nav>
-  <a href="index.html" class="active">Main</a>
-  <a href="mk8deluxe.html">Mario Kart 8 Deluxe</a>
-  <a href="info.html">Update Plans</a>
-</nav>
+    <a href="index.html">Main</a>
+    <a href="mk8deluxe.html" class="active">Mario Kart 8 Deluxe</a>
+    <a href="info.html">Update Plans</a>
+  </nav>
 
   <h1>Guess the MK8 Deluxe Track!</h1>
-  <!-- server will fill in the initial image name -->
-  <img id="track-img" src="/static/images2/{{ image }}" alt="Track Outline" width="300">
+  <img id="track-img" src="images2/mk8_0001.png" alt="Track Outline" width="300">
 
   <br><br>
 
@@ -169,11 +172,70 @@
       "3DS Toad Circuit", "N64 Choco Mountain", "Wii Coconut Mall"
     ];
 
+    // Track mapping by number
+    const trackImages = [
+      { name: "Mario Kart Stadium", img: "mk8_0001.png" },
+      { name: "Water Park", img: "mk8_0002.png" },
+      { name: "Sweet Sweet Canyon", img: "mk8_0003.png" },
+      { name: "Thwomp Ruins", img: "mk8_0004.png" },
+      { name: "Mario Circuit", img: "mk8_0005.png" },
+      { name: "Toad Harbour", img: "mk8_0006.png" },
+      { name: "Twisted Mansion", img: "mk8_0007.png" },
+      { name: "Shy Guy Falls", img: "mk8_0008.png" },
+      { name: "Sunshine Airport", img: "mk8_0009.png" },
+      { name: "Dolphin Shoals", img: "mk8_0010.png" },
+      { name: "Electrodrome", img: "mk8_0011.png" },
+      { name: "Mount Wario", img: "mk8_0012.png" },
+      { name: "Cloudtop Cruise", img: "mk8_0013.png" },
+      { name: "Bone Dry Dunes", img: "mk8_0014.png" },
+      { name: "Bowser's Castle", img: "mk8_0015.png" },
+      { name: "Rainbow Road", img: "mk8_0016.png" },
+      { name: "GCN Yoshi Circuit", img: "mk8_0017.png" },
+      { name: "Excitebike Arena", img: "mk8_0018.png" },
+      { name: "Dragon Driftway", img: "mk8_0019.png" },
+      { name: "Mute City", img: "mk8_0020.png" },
+      { name: "GCN Baby Park", img: "mk8_0021.png" },
+      { name: "GBA Cheese Land", img: "mk8_0022.png" },
+      { name: "Wild Woods", img: "mk8_0023.png" },
+      { name: "Animal Crossing", img: "mk8_0024.png" },
+      { name: "Wii Moo Moo Meadows", img: "mk8_0025.png" },
+      { name: "GBA Mario Circuit", img: "mk8_0026.png" },
+      { name: "DS Cheep Cheep Beach", img: "mk8_0027.png" },
+      { name: "N64 Toad's Turnpike", img: "mk8_0028.png" },
+      { name: "GCN Dry Dry Desert", img: "mk8_0029.png" },
+      { name: "SNES Donut Plains 3", img: "mk8_0030.png" },
+      { name: "N64 Royal Raceway", img: "mk8_0031.png" },
+      { name: "3DS DK Jungle", img: "mk8_0032.png" },
+      { name: "DS Wario Stadium", img: "mk8_0033.png" },
+      { name: "GCN Sherbet Land", img: "mk8_0034.png" },
+      { name: "3DS Music Park", img: "mk8_0035.png" },
+      { name: "N64 Yoshi Valley", img: "mk8_0036.png" },
+      { name: "DS Tick-Tock Clock", img: "mk8_0037.png" },
+      { name: "3DS Piranha Plant Pipeway", img: "mk8_0038.png" },
+      { name: "Wii Grumble Volcano", img: "mk8_0039.png" },
+      { name: "N64 Rainbow Road", img: "mk8_0040.png" },
+      { name: "Wii Wario's Gold Mine", img: "mk8_0041.png" },
+      { name: "SNES Rainbow Road", img: "mk8_0042.png" },
+      { name: "Ice Ice Outpost", img: "mk8_0043.png" },
+      { name: "Hyrule Circuit", img: "mk8_0044.png" },
+      { name: "3DS Neo Koopa City", img: "mk8_0045.png" },
+      { name: "GBA Ribbon Road", img: "mk8_0046.png" },
+      { name: "Super Bell Subway", img: "mk8_0047.png" },
+      { name: "Big Blue", img: "mk8_0048.png" },
+      { name: "Tour Paris Promenade", img: "mk8_0049.png" },
+      { name: "3DS Toad Circuit", img: "mk8_0050.png" },
+      { name: "N64 Choco Mountain", img: "mk8_0051.png" },
+      { name: "Wii Coconut Mall", img: "mk8_0052.png" }
+    ];
+
+    let answerIndex = Math.floor(Math.random() * trackImages.length);
+    let answer = trackImages[answerIndex].name;
     let guessCount = 0;
     const MAX_GUESSES = 6;
     const STORAGE_KEY = 'mk8dGuesses';
 
     document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('track-img').src = 'images2/' + trackImages[answerIndex].img;
       loadHistory();
       populateDatalist();
     });
@@ -188,7 +250,7 @@
       });
     }
 
-    async function submitGuess() {
+    function submitGuess() {
       if (guessCount >= MAX_GUESSES) {
         alert("❌ You've reached the maximum number of guesses!");
         return;
@@ -201,21 +263,15 @@
         return;
       }
 
-      const res = await fetch('/mk8deluxe/guess', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ guess })
-      });
-      const result = await res.json();
-
-      document.getElementById('result').innerText = result.correct
-        ? "✅ Correct! It's " + result.track
+      const isCorrect = guess === answer;
+      document.getElementById('result').innerText = isCorrect
+        ? "✅ Correct! It's " + answer
         : "❌ Wrong guess. Try again!";
 
       guessCount++;
-      addToHistory(guess, result.correct);
+      addToHistory(guess, isCorrect);
 
-      if (result.correct || guessCount >= MAX_GUESSES) {
+      if (isCorrect || guessCount >= MAX_GUESSES) {
         document.getElementById('play-again-btn').style.display = 'inline-block';
       }
 
@@ -246,27 +302,17 @@
       });
     }
 
-    // <--- Updated resetGame: fetch the new image name and update the <img> src dynamically --->
-    async function resetGame() {
-      const res = await fetch('/mk8deluxe/new-round', { method: 'POST' });
-      if (!res.ok) {
-        console.error('Failed to start a new round:', res.statusText);
-        return;
-      }
-
-      const data = await res.json();
-      // reset counters & UI
+    function resetGame() {
+      answerIndex = Math.floor(Math.random() * trackImages.length);
+      answer = trackImages[answerIndex].name;
+      document.getElementById('track-img').src = 'images2/' + trackImages[answerIndex].img;
       guessCount = 0;
       localStorage.removeItem(STORAGE_KEY);
       document.getElementById('history-list').innerHTML = '';
       document.getElementById('result').innerText = '';
       document.getElementById('play-again-btn').style.display = 'none';
       document.getElementById('guess').value = '';
-
-      // swap in the new track outline
-      document.getElementById('track-img').src = '/static/images2/' + data.image;
     }
   </script>
 </body>
-
 </html>
