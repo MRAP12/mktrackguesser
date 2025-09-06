@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Guess the Mario Kart Track</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('/static/images/background.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      color: white;
+      font-family: 'Lexend', sans-serif;
+      text-align: center;
+      padding: 40px;
+      margin: 0;
+    }
+
+    h1 {
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.6);
+      padding: 15px 0;
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      font-size: 18px;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      text-shadow: 1px 1px 2px #000;
+      padding-bottom: 5px;
+      border-bottom: 2px solid transparent;
+    }
+
+    nav a.active {
+      border-bottom-color: white;
+    }
+
+    img {
+      border: 0px solid white;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 20px;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: 1px solid white;
+      border-radius: 5px;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      text-shadow: 1px 1px 2px #000;
+    }
+
+    #guess-history {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    #guess-history h3 {
+      margin-bottom: 10px;
+    }
+
+    #history-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    #history-list li {
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .correct {
+      color: lightgreen;
+    }
+
+    .wrong {
+      color: salmon;
+    }
+
+    #play-again-btn {
+      display: none;
+      margin-top: 20px;
+      background-color: rgba(0, 128, 0, 0.5);
+      border: 1px solid white;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #credit {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+      font-size: 30px;
+      color: white;
+      opacity: 1;
+      font-family: 'Lexend', sans-serif;
+      text-shadow: 1px 1px 2px #000;
+    }
+  </style>
+
+  <script>
+    const validTracks = [
+      "SNES Mario Circuit 1",
+      "SNES Donut Plains 1",
+      "SNES Ghost Valley 1",
+      "SNES Bowser Castle 1",
+      "SNES Mario Circuit 2",
+      "SNES Choco Island 1",
+      "SNES Ghost Valley 2",
+      "SNES Donut Plains 2",
+      "SNES Bowser Castle 2",
+      "SNES Mario Circuit 3",
+      "SNES Koopa Beach 1",
+      "SNES Choco Island 2",
+      "SNES Vanilla Lake 1",
+      "SNES Bowser Castle 3",
+      "SNES Mario Circuit 4",
+      "SNES Donut Plains 3",
+      "SNES Koopa Beach 2",
+      "SNES Ghost Valley 3",
+      "SNES Vanilla Lake 2",
+      "SNES Rainbow Road",
+      "N64 Luigi Raceway",
+      "N64 Moo Moo Farm",
+      "N64 Koopa Troopa Beach",
+      "N64 Kalimari Desert",
+      "N64 Toad's Turnpike",
+      "N64 Frappe Snowland",
+      "N64 Choco Mountain",
+      "N64 Mario Raceway",
+      "N64 Wario Stadium",
+      "N64 Sherbet Land",
+      "N64 Royal Raceway",
+      "N64 Bowser's Castle",
+      "N64 DK's Jungle Parkway",
+      "N64 Yoshi Valley",
+      "N64 Banshee Boardwalk",
+      "N64 Rainbow Road",
+      "GBA Peach Circuit",
+      "GBA Shy Guy Beach",
+      "GBA Riverside Park",
+      "GBA Bowser Castle 1",
+      "GBA Mario Circuit",
+      "GBA Boo Lake",
+      "GBA Cheese Land",
+      "GBA Bowser Castle 2",
+      "GBA Luigi Circuit",
+      "GBA Sky Garden",
+      "GBA Cheep-Cheep Island",
+      "GBA Sunset Wilds",
+      "GBA Snow Land",
+      "GBA Ribbon Road",
+      "GBA Yoshi Desert",
+      "GBA Bowser Castle 3",
+      "GBA Lakeside Park",
+      "GBA Broken Pier",
+      "GBA Bowser Castle 4",
+      "GBA Rainbow Road",
+      "GCN Luigi Circuit",
+      "GCN Peach Beach",
+      "GCN Baby Park",
+      "GCN Dry Dry Desert",
+      "GCN Mushroom Bridge",
+      "GCN Mario Circuit",
+      "GCN Daisy Cruiser",
+      "GCN Waluigi Stadium",
+      "GCN Sherbet Land",
+      "GCN Mushroom City",
+      "GCN Yoshi Circuit",
+      "GCN DK Mountain",
+      "GCN Wario Colosseum",
+      "GCN Dino Dino Jungle",
+      "GCN Bowser's Castle",
+      "GCN Rainbow Road",
+      "DS Figure 8 Circuit",
+      "DS Yoshi Falls",
+      "DS Cheep Cheep Beach",
+      "DS Luigi's Mansion",
+      "DS Desert Hills",
+      "DS Delfino Square",
+      "DS Waluigi Pinball",
+      "DS Shroom Ridge",
+      "DS DK Pass",
+      "DS Tick-Tock Clock",
+      "DS Mario Circuit",
+      "DS Airship Fortress",
+      "DS Wario Stadium",
+      "DS Peach Gardens",
+      "DS Bowser Castle",
+      "DS Rainbow Road",
+      "Wii Luigi Circuit",
+      "Wii Moo Moo Meadows",
+      "Wii Mushroom Gorge",
+      "Wii Toad's Factory",
+      "Wii Mario Circuit",
+      "Wii Coconut Mall",
+      "Wii DK Summit",
+      "Wii Wario's Gold Mine",
+      "Wii Daisy Circuit",
+      "Wii Koopa Cape",
+      "Wii Maple Treeway",
+      "Wii Grumble Volcano",
+      "Wii Dry Dry Ruins",
+      "Wii Moonview Highway",
+      "Wii Bowser's Castle",
+      "Wii Rainbow Road",
+      "3DS Toad Circuit",
+      "3DS Daisy Hills",
+      "3DS Cheep Cheep Lagoon",
+      "3DS Shy Guy Bazaar",
+      "3DS Wuhu Loop",
+      "3DS Mario Circuit",
+      "3DS Music Park",
+      "3DS Rock Rock Mountain",
+      "3DS Piranha Plant Slide",
+      "3DS Wario's Shipyard",
+      "3DS Neo Bowser City",
+      "3DS Maka Wuhu",
+      "3DS DK Jungle",
+      "3DS Rosalina's Ice World",
+      "3DS Bowser's Castle",
+      "3DS Rainbow Road"
+
+    ];
+
+    let guessCount = 0;
+    const MAX_GUESSES = 6;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      guessCount = 0;
+      loadHistory();
+      populateDatalist();
+    });
+
+    async function submitGuess() {
+      if (guessCount >= MAX_GUESSES) {
+        alert("❌ You've reached the maximum number of guesses!");
+        return;
+      }
+
+      const guessInput = document.getElementById('guess');
+      const guess = guessInput.value.trim();
+
+      if (!validTracks.includes(guess)) {
+        alert("❌ Invalid track name. Please choose a valid Mario Kart track.");
+        return;
+      }
+
+      const response = await fetch('/guess', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guess })
+      });
+
+      const result = await response.json();
+      document.getElementById('result').innerText = result.correct ?
+        "✅ Correct! It's " + result.track :
+        "❌ Wrong guess. Try again!";
+
+      guessCount++;
+      addToHistory(guess, result.correct);
+
+      if (result.correct || guessCount >= MAX_GUESSES) {
+        document.getElementById('play-again-btn').style.display = 'inline-block';
+      }
+
+      guessInput.value = '';
+    }
+
+    function addToHistory(guess, isCorrect) {
+      const historyList = document.getElementById('history-list');
+      const li = document.createElement('li');
+      li.textContent = `Guess ${guessCount}: ${guess} ${isCorrect ? "✅" : "❌"}`;
+      li.className = isCorrect ? 'correct' : 'wrong';
+      historyList.appendChild(li);
+
+      const stored = JSON.parse(localStorage.getItem('mkGuesses') || '[]');
+      stored.push({ guess, correct: isCorrect, number: guessCount });
+      localStorage.setItem('mkGuesses', JSON.stringify(stored));
+    }
+
+    function loadHistory() {
+      const stored = JSON.parse(localStorage.getItem('mkGuesses') || '[]');
+      const historyList = document.getElementById('history-list');
+      historyList.innerHTML = '';
+      stored.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = `Guess ${entry.number}: ${entry.guess} ${entry.correct ? "✅" : "❌"}`;
+        li.className = entry.correct ? 'correct' : 'wrong';
+        historyList.appendChild(li);
+      });
+    }
+
+    async function resetGame() {
+      const response = await fetch('/new-round', { method: 'POST' });
+      const data = await response.json();
+
+      guessCount = 0;
+      localStorage.removeItem('mkGuesses');
+      document.getElementById('history-list').innerHTML = '';
+      document.getElementById('result').innerText = '';
+      document.getElementById('play-again-btn').style.display = 'none';
+
+      const trackImage = document.querySelector('img');
+      trackImage.src = `/static/images/${data.image}`;
+    }
+
+    function populateDatalist() {
+      const datalist = document.getElementById('track-list');
+      datalist.innerHTML = '';
+      validTracks.forEach(track => {
+        const option = document.createElement('option');
+        option.value = track;
+        datalist.appendChild(option);
+      });
+    }
+  </script>
+</head>
+<body>
+  <nav>
+    <a href="/" class="active">Main</a>
+    <a href="/mk8deluxe">Mario Kart 8 Deluxe</a>
+    <a href="/info">Update Plans</a>
+  </nav>
+
+  <h1>Guess the Mario Kart Track!</h1>
+
+  <img src="/static/images/{{ image }}" alt="Track Outline" width="300">
+
+  <br><br>
+
+  <input type="text" id="guess" placeholder="Enter your guess here..." list="track-list" autocomplete="on">
+  <datalist id="track-list"></datalist>
+
+  <br><br>
+  <button onclick="submitGuess()">Submit</button>
+  <p id="result"></p>
+  <button id="play-again-btn" onclick="resetGame()">🔁 Play Again</button>
+
+  <div id="guess-history">
+    <h3>Guesses:</h3>
+    <ul id="history-list"></ul>
+  </div>
+
+  <div id="credit">By MRAP12</div>
+</body>
+</html>
