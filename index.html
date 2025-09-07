@@ -107,10 +107,10 @@
 </head>
 <body>
   <nav>
-  <a href="index.html" class="active">Main</a>
-  <a href="mk8deluxe.html">Mario Kart 8 Deluxe</a>
-  <a href="info.html">Update Plans</a>
-</nav>
+    <a href="index.html" class="active">Main</a>
+    <a href="mk8deluxe.html">Mario Kart 8 Deluxe</a>
+    <a href="info.html">Update Plans</a>
+  </nav>
 
   <h1>Guess the Mario Kart Track!</h1>
   <!-- The track image will be set by JS -->
@@ -118,11 +118,14 @@
 
   <br><br>
 
-  <input type="text" id="guess" placeholder="Enter your guess here..." list="track-list" autocomplete="on">
-  <datalist id="track-list"></datalist>
+  <!-- Wrapped input + submit so we can hide them together on win -->
+  <div id="guess-container">
+    <input type="text" id="guess" placeholder="Enter your guess here..." list="track-list" autocomplete="on">
+    <datalist id="track-list"></datalist>
+    <br><br>
+    <button id="submit-btn" onclick="submitGuess()">Submit</button>
+  </div>
 
-  <br><br>
-  <button onclick="submitGuess()">Submit</button>
   <p id="result"></p>
   <button id="play-again-btn" onclick="resetGame()">🔁 Play Again</button>
 
@@ -218,16 +221,23 @@
         return;
       }
 
-      let correct = (guess === currentTrackName);
+      const correct = (guess === currentTrackName);
 
-      document.getElementById('result').innerText = correct ?
-          "✅ Correct! It's " + currentTrackName :
-          "❌ Wrong guess. Try again!";
+      document.getElementById('result').innerText = correct
+        ? "✅ Correct! It's " + currentTrackName
+        : "❌ Wrong guess. Try again!";
 
       guessCount++;
       addToHistory(guess, correct);
 
-      if (correct || guessCount >= MAX_GUESSES) {
+      if (correct) {
+        // Hide the input + submit button once the player wins
+        document.getElementById('guess-container').style.display = 'none';
+        document.getElementById('play-again-btn').style.display = 'inline-block';
+        return;
+      }
+
+      if (guessCount >= MAX_GUESSES) {
         document.getElementById('play-again-btn').style.display = 'inline-block';
       }
 
@@ -264,6 +274,11 @@
       document.getElementById('history-list').innerHTML = '';
       document.getElementById('result').innerText = '';
       document.getElementById('play-again-btn').style.display = 'none';
+      // Show the input + submit again for the new round
+      document.getElementById('guess-container').style.display = 'block';
+      // Clear any lingering input value
+      const guessInput = document.getElementById('guess');
+      if (guessInput) guessInput.value = '';
       randomTrack();
     }
 
@@ -274,10 +289,10 @@
       document.getElementById('play-again-btn').style.display = 'none';
       document.getElementById('result').innerText = '';
       document.getElementById('history-list').innerHTML = '';
+      // Ensure input is visible on initial load
+      document.getElementById('guess-container').style.display = 'block';
       randomTrack();
     });
   </script>
 </body>
 </html>
-
-
