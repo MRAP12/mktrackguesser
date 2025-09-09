@@ -1,155 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="images_mkwd/favicon.png">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" href="images_mkwd/favicon.png" />
   <title>Guess the Mario Kart World track!</title>
-  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet" />
   <style>
+    :root {
+      --gap-xs: 0.5rem;
+      --gap-sm: 0.75rem;
+      --gap: 1rem;
+      --gap-lg: 1.5rem;
+      --text: #ffffff;
+      --bg-overlay: rgba(0,0,0,0.55);
+      --panel: rgba(0,0,0,0.4);
+      --shadow: #0006;
+      --radius: 12px;
+      --tap-size: 44px;
+    }
+
+    /* Base: mobile-first */
+    html, body {
+      height: 100%;
+    }
+
     body {
       margin: 0;
-      padding: 40px;
+      padding: var(--gap);
+      color: var(--text);
+      font-family: 'Lexend', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       text-align: center;
-      font-family: 'Lexend', sans-serif;
-      color: white;
-      background: url('images_mkwd/background.png') center/cover no-repeat;
+      background: url('images_mkwd/background.png') center/cover no-repeat fixed;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: var(--gap);
     }
 
-    h1 {
-      text-shadow: 2px 2px 4px #000;
+    /* Safer contrast on busy background */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.65));
+      pointer-events: none;
+      z-index: -1;
     }
 
-    nav {
+    header {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: rgba(0,0,0,0.6);
-      padding: 15px 0;
+      background: var(--bg-overlay);
+      backdrop-filter: saturate(120%) blur(6px);
+      -webkit-backdrop-filter: saturate(120%) blur(6px);
+      border-radius: 999px;
+      margin-inline: auto;
+      padding: var(--gap-sm) var(--gap);
+      max-width: min(100%, 1000px);
+    }
+
+    nav {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      gap: 40px;
-      font-size: 18px;
+      gap: var(--gap);
+      font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+      line-height: 1;
     }
 
     nav a {
-      color: white;
+      color: var(--text);
       text-decoration: none;
-      font-weight: bold;
+      font-weight: 700;
       text-shadow: 1px 1px 2px #000;
-      padding-bottom: 5px;
+      padding: 0.35rem 0.25rem;
       border-bottom: 2px solid transparent;
+      outline-offset: 4px;
     }
 
-    nav a.active {
-      border-bottom-color: white;
+    nav a.active,
+    nav a:focus-visible,
+    nav a:hover {
+      border-bottom-color: var(--text);
     }
 
-    img {
-      margin-top: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 12px #0006;
+    main {
+      margin-inline: auto;
+      width: 100%;
+      max-width: 1000px;
+      display: grid;
+      place-items: center;
+      gap: var(--gap-lg);
+    }
+
+    h1 {
+      margin: 0.25rem 0 0;
+      font-size: clamp(1.4rem, 4vw, 2.4rem);
+      line-height: 1.15;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    .card {
+      width: min(100%, 720px);
+      background: var(--panel);
+      padding: var(--gap-lg);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px var(--shadow);
+      display: grid;
+      gap: var(--gap);
+    }
+
+    .media {
+      display: grid;
+      justify-items: center;
+      gap: var(--gap);
+    }
+
+    #track-img {
+      display: block;
+      width: 100%;
+      max-width: 520px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px var(--shadow);
       background: #222;
-      max-width: 95vw;
     }
 
-    input, button {
-      margin-top: 20px;
-      padding: 10px;
-      font-size: 16px;
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--gap);
+      justify-items: center;
+    }
+
+    .controls-inline {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: var(--gap);
+      width: min(100%, 520px);
+    }
+
+    label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    input[type="text"], button {
       background: rgba(0,0,0,0.5);
-      color: white;
-      border: 1px solid white;
-      border-radius: 5px;
+      color: var(--text);
+      border: 1px solid #fff;
+      border-radius: 8px;
+      font-size: 1rem;
+      line-height: 1.2;
+      min-height: var(--tap-size);
+    }
+
+    input[type="text"] {
+      padding: 0.75rem 0.85rem;
+      width: 100%;
+    }
+
+    button {
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    #submit-btn {
+      background: rgba(0, 128, 255, 0.5);
+      border-color: #e6f3ff;
+    }
+
+    #play-again-btn {
+      display: none;
+      background: rgba(0, 128, 0, 0.5);
+      border-color: #eaffea;
     }
 
     #result {
-      margin-top: 20px;
-      font-size: 18px;
+      min-height: 1.6em;
+      font-size: 1.05rem;
       text-shadow: 1px 1px 2px #000;
     }
 
-    #guess-history {
-      margin: 30px auto 0;
-      max-width: 500px;
-      background: rgba(0,0,0,0.4);
-      padding: 20px;
-      border-radius: 10px;
+    .history {
+      width: min(100%, 720px);
+      background: var(--panel);
+      padding: var(--gap-lg);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px var(--shadow);
       text-align: left;
     }
 
-    #guess-history h3 {
-      margin-bottom: 10px;
+    .history h3 {
+      margin: 0 0 var(--gap-sm);
+      font-size: 1.1rem;
     }
 
     #history-list {
       list-style: none;
       padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.35rem;
     }
 
     #history-list li {
-      margin-bottom: 5px;
-      font-size: 16px;
+      font-size: 1rem;
     }
 
-    .correct {
-      color: lightgreen;
-    }
-
-    .wrong {
-      color: salmon;
-    }
-
-    #play-again-btn {
-      display: none;
-      margin-top: 20px;
-      background: rgba(0,128,0,0.5);
-      border: 1px solid white;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+    .correct { color: lightgreen; }
+    .wrong { color: salmon; }
 
     #credit {
       position: fixed;
-      right: 15px;
+      right: 10px;
       bottom: 10px;
-      font-size: 30px;
+      font-size: clamp(1rem, 3.2vw, 1.5rem);
       text-shadow: 1px 1px 2px #000;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* Wider screens */
+    @media (min-width: 600px) {
+      .controls-inline {
+        grid-template-columns: 1fr auto;
+      }
+    }
+
+    @media (min-width: 900px) {
+      .card {
+        grid-template-columns: 1fr;
+      }
+      nav { gap: 2rem; }
+    }
+
+    /* Prefer less motion */
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; }
+      body::before { background: rgba(0,0,0,0.5); }
     }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">Main</a>
-    <a href="mk8deluxe.html">Mario Kart 8 Deluxe</a>
-    <a href="info.html">Update Plans</a>
-    <a href="mkwd.html" class="active">Mario Kart World</a>
-  </nav>
+  <header>
+    <nav aria-label="Primary">
+      <a href="index.html">Main</a>
+      <a href="mk8deluxe.html">Mario Kart 8 Deluxe</a>
+      <a href="info.html">Update Plans</a>
+      <a href="mkwd.html" class="active" aria-current="page">Mario Kart World</a>
+    </nav>
+  </header>
 
-  <h1>Guess the Mario Kart World Track!</h1>
-  <img id="track-img" src="images_mkwd/mkwd_0001.png" alt="Track Outline" width="300">
+  <main>
+    <h1>Guess the Mario Kart World Track!</h1>
 
-  <br><br>
+    <section class="card" aria-labelledby="game-title">
+      <div class="media">
+        <img id="track-img" src="images_mkwd/mkwd_0001.png" alt="Track outline to guess" />
+      </div>
 
-  <input
-    type="text"
-    id="guess"
-    placeholder="Enter your guess here..."
-    list="track-list"
-    autocomplete="on"
-  >
-  <datalist id="track-list"></datalist>
+      <div class="controls" role="form" aria-label="Guess controls">
+        <div class="controls-inline">
+          <label for="guess">Track name</label>
+          <input
+            type="text"
+            id="guess"
+            placeholder="Enter your guess..."
+            list="track-list"
+            autocomplete="on"
+            inputmode="text"
+          />
+          <button id="submit-btn" type="button" onclick="submitGuess()">Submit</button>
+        </div>
 
-  <br><br>
-  <button type="button" onclick="submitGuess()">Submit</button>
-  <p id="result"></p>
-  <button type="button" id="play-again-btn" onclick="resetGame()">🔁 Play Again</button>
+        <datalist id="track-list"></datalist>
 
-  <div id="guess-history">
-    <h3>Guesses:</h3>
-    <ul id="history-list"></ul>
-  </div>
+        <p id="result" role="status" aria-live="polite"></p>
+        <button type="button" id="play-again-btn" onclick="resetGame()">🔁 Play Again</button>
+      </div>
+    </section>
+
+    <section class="history" aria-labelledby="history-title">
+      <h3 id="history-title">Guesses</h3>
+      <ul id="history-list"></ul>
+    </section>
+  </main>
 
   <div id="credit">By MRAP12</div>
 
@@ -200,7 +345,7 @@
       { name: "Acorn Heights", img: "mkwd_0029.png" },
       { name: "Mario Circuit", img: "mkwd_0030.png" },
       { name: "Peach Stadium", img: "mkwd_0031.png" },
-      { name: "Rainbow Road", img: "mkwd_0032.png" },
+      { name: "Rainbow Road", img: "mkwd_0032.png" }
     ];
 
     let answerIndex = Math.floor(Math.random() * trackImages.length);
@@ -210,9 +355,19 @@
     const STORAGE_KEY = 'mkwdGuesses';
 
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('track-img').src = 'images_mkwd/' + trackImages[answerIndex].img;
-      loadHistory();
+      const imgEl = document.getElementById('track-img');
+      imgEl.src = 'images_mkwd/' + trackImages[answerIndex].img;
       populateDatalist();
+      loadHistory();
+
+      // Submit on Enter for faster play
+      const input = document.getElementById('guess');
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitGuess();
+        }
+      });
     });
 
     function populateDatalist() {
@@ -251,6 +406,7 @@
       }
 
       input.value = '';
+      input.focus();
     }
 
     function addToHistory(guess, isCorrect) {
@@ -275,6 +431,7 @@
         li.className = entry.correct ? 'correct' : 'wrong';
         list.appendChild(li);
       });
+      guessCount = stored.length;
     }
 
     function resetGame() {
@@ -287,6 +444,7 @@
       document.getElementById('result').innerText = '';
       document.getElementById('play-again-btn').style.display = 'none';
       document.getElementById('guess').value = '';
+      document.getElementById('guess').focus();
     }
   </script>
 </body>
