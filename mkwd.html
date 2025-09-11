@@ -3,60 +3,61 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/png" href="images_mkwd/favicon.png" />
   <title>Guess the Mario Kart World track!</title>
+  <link rel="icon" type="image/png" href="images_mkwd/favicon.png" />
   <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet" />
   <style>
     :root {
       --gap-xs: 0.5rem;
-      --gap-sm: 0.75rem;
       --gap: 1rem;
       --gap-lg: 1.5rem;
-      --text: #ffffff;
-      --bg-overlay: rgba(0,0,0,0.55);
-      --panel: rgba(0,0,0,0.4);
+      --panel: rgba(0,0,0,0.45);
+      --overlay: rgba(0,0,0,0.6);
       --shadow: #0006;
+      --text: #fff;
       --radius: 12px;
-      --tap-size: 44px;
+      --tap: 44px;
     }
 
-    /* Base: mobile-first */
+    /* Base layout — mobile first */
     html, body {
-      height: 100%;
+      min-height: 100%;
     }
 
     body {
       margin: 0;
-      padding: var(--gap);
+      padding: 1rem 1rem 5rem; /* bottom padding prevents cutoff on small screens */
       color: var(--text);
       font-family: 'Lexend', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       text-align: center;
       background: url('images_mkwd/background.png') center/cover no-repeat fixed;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
+      display: flex;
+      flex-direction: column;
       gap: var(--gap);
     }
 
-    /* Safer contrast on busy background */
+    /* Soft overlay to improve contrast on busy background */
     body::before {
       content: "";
       position: fixed;
       inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.65));
+      background: linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.65));
       pointer-events: none;
       z-index: -1;
     }
 
+    /* Top nav */
     header {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: var(--bg-overlay);
-      backdrop-filter: saturate(120%) blur(6px);
-      -webkit-backdrop-filter: saturate(120%) blur(6px);
+      background: var(--overlay);
+      backdrop-filter: blur(6px) saturate(120%);
+      -webkit-backdrop-filter: blur(6px) saturate(120%);
       border-radius: 999px;
       margin-inline: auto;
-      padding: var(--gap-sm) var(--gap);
+      margin-top: 0.25rem;
+      padding: 0.6rem 1rem;
       max-width: min(100%, 1000px);
     }
 
@@ -64,7 +65,7 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: var(--gap);
+      gap: 1rem;
       font-size: clamp(0.95rem, 2.5vw, 1.05rem);
       line-height: 1;
     }
@@ -74,7 +75,7 @@
       text-decoration: none;
       font-weight: 700;
       text-shadow: 1px 1px 2px #000;
-      padding: 0.35rem 0.25rem;
+      padding-bottom: 0.25rem;
       border-bottom: 2px solid transparent;
       outline-offset: 4px;
     }
@@ -86,17 +87,18 @@
     }
 
     main {
-      margin-inline: auto;
       width: 100%;
       max-width: 1000px;
+      margin-inline: auto;
       display: grid;
       place-items: center;
       gap: var(--gap-lg);
+      flex: 1;
     }
 
     h1 {
-      margin: 0.25rem 0 0;
-      font-size: clamp(1.4rem, 4vw, 2.4rem);
+      margin: 0.5rem 0 0;
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
       line-height: 1.15;
       text-shadow: 2px 2px 4px #000;
     }
@@ -111,17 +113,12 @@
       gap: var(--gap);
     }
 
-    .media {
-      display: grid;
-      justify-items: center;
-      gap: var(--gap);
-    }
-
     #track-img {
       display: block;
       width: 100%;
       max-width: 520px;
       height: auto;
+      margin-inline: auto;
       border-radius: 10px;
       box-shadow: 0 2px 12px var(--shadow);
       background: #222;
@@ -129,19 +126,19 @@
 
     .controls {
       display: grid;
-      grid-template-columns: 1fr;
       gap: var(--gap);
       justify-items: center;
     }
 
-    .controls-inline {
+    .controls-row {
+      width: min(100%, 520px);
       display: grid;
       grid-template-columns: 1fr auto;
       gap: var(--gap);
-      width: min(100%, 520px);
+      align-items: center;
     }
 
-    label {
+    label.sr-only {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -159,8 +156,7 @@
       border: 1px solid #fff;
       border-radius: 8px;
       font-size: 1rem;
-      line-height: 1.2;
-      min-height: var(--tap-size);
+      min-height: var(--tap);
     }
 
     input[type="text"] {
@@ -169,8 +165,8 @@
     }
 
     button {
-      padding: 0.75rem 1rem;
       cursor: pointer;
+      padding: 0.75rem 1rem;
       white-space: nowrap;
     }
 
@@ -201,7 +197,7 @@
     }
 
     .history h3 {
-      margin: 0 0 var(--gap-sm);
+      margin: 0 0 var(--gap);
       font-size: 1.1rem;
     }
 
@@ -213,38 +209,32 @@
       gap: 0.35rem;
     }
 
-    #history-list li {
-      font-size: 1rem;
-    }
-
+    #history-list li { font-size: 1rem; }
     .correct { color: lightgreen; }
     .wrong { color: salmon; }
 
+    /* Credit: fixed on larger screens, flowing on mobile to avoid overlap */
     #credit {
       position: fixed;
       right: 10px;
       bottom: 10px;
-      font-size: clamp(1rem, 3.2vw, 1.5rem);
+      font-size: clamp(1rem, 3.2vw, 1.4rem);
       text-shadow: 1px 1px 2px #000;
       user-select: none;
       pointer-events: none;
     }
 
-    /* Wider screens */
-    @media (min-width: 600px) {
-      .controls-inline {
-        grid-template-columns: 1fr auto;
+    @media (max-width: 600px) {
+      header { border-radius: 14px; }
+      nav { gap: 0.75rem; }
+      .controls-row { grid-template-columns: 1fr; }
+      #credit {
+        position: static;        /* let it flow on mobile */
+        pointer-events: auto;
+        margin-top: 1rem;
       }
     }
 
-    @media (min-width: 900px) {
-      .card {
-        grid-template-columns: 1fr;
-      }
-      nav { gap: 2rem; }
-    }
-
-    /* Prefer less motion */
     @media (prefers-reduced-motion: reduce) {
       * { scroll-behavior: auto !important; }
       body::before { background: rgba(0,0,0,0.5); }
@@ -265,13 +255,11 @@
     <h1>Guess the Mario Kart World Track!</h1>
 
     <section class="card" aria-labelledby="game-title">
-      <div class="media">
-        <img id="track-img" src="images_mkwd/mkwd_0001.png" alt="Track outline to guess" />
-      </div>
+      <img id="track-img" src="images_mkwd/mkwd_0001.png" alt="Track outline to guess" />
 
-      <div class="controls" role="form" aria-label="Guess controls">
-        <div class="controls-inline">
-          <label for="guess">Track name</label>
+      <div class="controls" id="controls">
+        <div class="controls-row" id="input-row">
+          <label class="sr-only" for="guess">Track name</label>
           <input
             type="text"
             id="guess"
@@ -280,15 +268,13 @@
             autocomplete="on"
             inputmode="text"
           />
-          <button id="submit-btn" type="button" onclick="submitGuess()">Submit</button>
+          <button id="submit-btn" type="button">Submit</button>
         </div>
 
         <datalist id="track-list"></datalist>
 
         <p id="result" role="status" aria-live="polite"></p>
-          <button type="button" onclick="submitGuess()">Submit</button>
-  <p id="result"></p>
-  <button type="button" id="play-again-btn" onclick="resetGame()">🔁 Play Again</button>
+        <button type="button" id="play-again-btn">🔁 Play Again</button>
       </div>
     </section>
 
@@ -301,20 +287,7 @@
   <div id="credit">By MRAP12</div>
 
   <script>
-    // Deluxe track list
-    const validTracks = [
-      "Mario Bros Circuit", "Crown City", "Whistlestop Summit", "DK Spaceport",
-      "Desert Hills", "Shy Guy Bazaar", "Wario Stadium", "Airship Fortress",
-      "DK Pass", "Starview Peak", "Sky-High Sundae", "Wario Shipyard",
-      "Koopa Troopa Beach", "Faraway Oasis", "Crown City", "Peach Stadium",
-      "Peach Beach", "Salty Salty Speedway", "Dino Dino Jungle", "Great ? Block Ruins",
-      "Cheep Cheep Falls", "Dandelion Depths", "Boo Cinema", "Dry Bones Burnout",
-      "Moo Moo Meadows", "Choco Mountain", "Toad's Factory",
-      "Bowser's Castle", "Acorn Heights", "Mario Circuit",
-      "Peach Stadium", "Rainbow Road"
-    ];
-
-    // Track mapping by number
+    // Track mapping and names (from your original list)
     const trackImages = [
       { name: "Mario Bros Circuit", img: "mkwd_0001.png" },
       { name: "Crown City", img: "mkwd_0002.png" },
@@ -350,27 +323,47 @@
       { name: "Rainbow Road", img: "mkwd_0032.png" }
     ];
 
+    // Build a valid track list with unique names (prevents duplicates like Crown City/Peach Stadium appearing twice)
+    const validTracks = Array.from(new Set(trackImages.map(t => t.name)));
+
+    // Game state
     let answerIndex = Math.floor(Math.random() * trackImages.length);
     let answer = trackImages[answerIndex].name;
     let guessCount = 0;
     const MAX_GUESSES = 6;
     const STORAGE_KEY = 'mkwdGuesses';
+    let previousGuesses = []; // case-insensitive tracking
 
+    // Elements
+    const imgEl = document.getElementById('track-img');
+    const guessEl = document.getElementById('guess');
+    const resultEl = document.getElementById('result');
+    const historyListEl = document.getElementById('history-list');
+    const submitBtn = document.getElementById('submit-btn');
+    const playAgainBtn = document.getElementById('play-again-btn');
+    const inputRow = document.getElementById('input-row');
+
+    // Init
     document.addEventListener('DOMContentLoaded', () => {
-      const imgEl = document.getElementById('track-img');
       imgEl.src = 'images_mkwd/' + trackImages[answerIndex].img;
       populateDatalist();
       loadHistory();
+      wireEvents();
+      guessEl.focus();
+    });
 
-      // Submit on Enter for faster play
-      const input = document.getElementById('guess');
-      input.addEventListener('keydown', (e) => {
+    function wireEvents() {
+      submitBtn.addEventListener('click', submitGuess);
+      playAgainBtn.addEventListener('click', resetGame);
+
+      // Submit on Enter
+      guessEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
           submitGuess();
         }
       });
-    });
+    }
 
     function populateDatalist() {
       const dl = document.getElementById('track-list');
@@ -383,40 +376,45 @@
     }
 
     function submitGuess() {
-      if (guessCount >= MAX_GUESSES) {
-        alert("❌ You've reached the maximum number of guesses!");
-        return;
-      }
+      if (submitBtn.disabled) return; // ignore after end
 
-      const input = document.getElementById('guess');
-      const guess = input.value.trim();
-      if (!validTracks.includes(guess)) {
+      const raw = guessEl.value.trim();
+      const guess = raw;
+      const normalized = raw.toLowerCase();
+
+      if (!validTracks.map(n => n.toLowerCase()).includes(normalized)) {
         alert("❌ Invalid track name. Please choose a valid Mario Kart World track.");
         return;
       }
 
-      const isCorrect = guess === answer;
-      document.getElementById('result').innerText = isCorrect
-        ? "✅ Correct! It's " + answer
-        : "❌ Wrong guess. Try again!";
+      if (previousGuesses.includes(normalized)) {
+        alert("⚠️ You've already guessed that track.");
+        return;
+      }
 
+      const isCorrect = guess === answer;
       guessCount++;
+      previousGuesses.push(normalized);
+
+      resultEl.textContent = isCorrect
+        ? `✅ Correct! It's ${answer}`
+        : `❌ Wrong guess. Try again! (${MAX_GUESSES - guessCount} left)`;
+
       addToHistory(guess, isCorrect);
 
       if (isCorrect || guessCount >= MAX_GUESSES) {
-        document.getElementById('play-again-btn').style.display = 'inline-block';
+        endGame(isCorrect);
       }
 
-      input.value = '';
-      input.focus();
+      guessEl.value = '';
+      if (!isCorrect) guessEl.focus();
     }
 
     function addToHistory(guess, isCorrect) {
-      const list = document.getElementById('history-list');
       const li = document.createElement('li');
       li.textContent = `Guess ${guessCount}: ${guess} ${isCorrect ? '✅' : '❌'}`;
       li.className = isCorrect ? 'correct' : 'wrong';
-      list.appendChild(li);
+      historyListEl.appendChild(li);
 
       const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
       stored.push({ guess, correct: isCorrect, number: guessCount });
@@ -425,28 +423,70 @@
 
     function loadHistory() {
       const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      const list = document.getElementById('history-list');
-      list.innerHTML = '';
+      historyListEl.innerHTML = '';
       stored.forEach(entry => {
         const li = document.createElement('li');
         li.textContent = `Guess ${entry.number}: ${entry.guess} ${entry.correct ? '✅' : '❌'}`;
         li.className = entry.correct ? 'correct' : 'wrong';
-        list.appendChild(li);
+        historyListEl.appendChild(li);
       });
       guessCount = stored.length;
+      previousGuesses = stored.map(e => e.guess.toLowerCase());
+
+      // If a previous session ended, keep it ended
+      if (stored.some(e => e.correct) || guessCount >= MAX_GUESSES) {
+        endGame(stored.some(e => e.correct), { fromLoad: true });
+      }
+    }
+
+    function endGame(won, opts = {}) {
+      // Reveal final answer if lost
+      if (!won) {
+        resultEl.textContent = `❌ Out of guesses! The answer was: ${answer}`;
+      }
+
+      // Hide and disable input row + submit button
+      submitBtn.disabled = true;
+      guessEl.disabled = true;
+      inputRow.style.display = 'none';
+
+      // Show Play Again
+      playAgainBtn.style.display = 'inline-block';
+
+      // Ensure last elements are visible (avoid cutoff)
+      document.body.style.paddingBottom = '5.5rem';
+
+      // Save a small marker so reloading preserves end state
+      if (!opts.fromLoad) {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
+      }
     }
 
     function resetGame() {
+      // New answer
       answerIndex = Math.floor(Math.random() * trackImages.length);
       answer = trackImages[answerIndex].name;
-      document.getElementById('track-img').src = 'images_mkwd/' + trackImages[answerIndex].img;
+      imgEl.src = 'images_mkwd/' + trackImages[answerIndex].img;
+
+      // Reset state
       guessCount = 0;
+      previousGuesses = [];
+      resultEl.textContent = '';
+      historyListEl.innerHTML = '';
+      guessEl.value = '';
+      guessEl.disabled = false;
+      submitBtn.disabled = false;
+      inputRow.style.display = 'grid';
+      playAgainBtn.style.display = 'none';
+
+      // Clear local history
       localStorage.removeItem(STORAGE_KEY);
-      document.getElementById('history-list').innerHTML = '';
-      document.getElementById('result').innerText = '';
-      document.getElementById('play-again-btn').style.display = 'none';
-      document.getElementById('guess').value = '';
-      document.getElementById('guess').focus();
+
+      // Restore padding (still leaves enough space)
+      document.body.style.paddingBottom = '5rem';
+
+      guessEl.focus();
     }
   </script>
 </body>
