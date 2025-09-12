@@ -19,14 +19,13 @@
       --tap: 44px;
     }
 
-    /* Base layout — mobile first */
     html, body {
       min-height: 100%;
     }
 
     body {
       margin: 0;
-      padding: 1rem 1rem 5rem; /* bottom padding prevents cutoff on small screens */
+      padding: 1rem 1rem 5rem;
       color: var(--text);
       font-family: 'Lexend', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       text-align: center;
@@ -36,7 +35,6 @@
       gap: var(--gap);
     }
 
-    /* Soft overlay to improve contrast on busy background */
     body::before {
       content: "";
       position: fixed;
@@ -46,7 +44,6 @@
       z-index: -1;
     }
 
-    /* Top nav */
     header {
       position: sticky;
       top: 0;
@@ -111,6 +108,7 @@
       box-shadow: 0 8px 24px var(--shadow);
       display: grid;
       gap: var(--gap);
+      justify-items: center;
     }
 
     #track-img {
@@ -124,18 +122,24 @@
       background: #222;
     }
 
+    /* Fix input row centering and alignment */
     .controls {
       display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 0.75rem;
-      justify-items: center;
+      width: 100%;
     }
 
     .controls-row {
-      width: min(100%, 520px);
       display: flex;
-      grid-template-columns: 1fr auto;
-      gap: 0.75rem;
+      flex-direction: row;
       align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
     }
 
     label.sr-only {
@@ -157,17 +161,24 @@
       border-radius: 8px;
       font-size: 1rem;
       min-height: var(--tap);
+      box-sizing: border-box;
     }
 
     input[type="text"] {
       padding: 0.75rem 0.85rem;
       width: 100%;
+      max-width: 360px;
+      flex: 1 1 0;
+      text-align: left;
+      margin: 0;
     }
 
     button {
       cursor: pointer;
       padding: 0.75rem 1rem;
       white-space: nowrap;
+      margin: 0;
+      flex-shrink: 0;
     }
 
     #submit-btn {
@@ -213,7 +224,6 @@
     .correct { color: lightgreen; }
     .wrong { color: salmon; }
 
-    /* Credit: fixed on larger screens, flowing on mobile to avoid overlap */
     #credit {
       position: fixed;
       right: 10px;
@@ -227,9 +237,16 @@
     @media (max-width: 600px) {
       header { border-radius: 14px; }
       nav { gap: 0.75rem; }
-      .controls-row { grid-template-columns: 1fr; }
+      .controls-row {
+        flex-direction: column;
+        align-items: stretch;
+        max-width: 100%;
+      }
+      input[type="text"] {
+        max-width: 100%;
+      }
       #credit {
-        position: static;        /* let it flow on mobile */
+        position: static;
         pointer-events: auto;
         margin-top: 1rem;
       }
@@ -253,12 +270,10 @@
 
   <main>
     <h1>Guess the Mario Kart World Track!</h1>
-
     <section class="card" aria-labelledby="game-title">
       <img id="track-img" src="images_mkwd/mkwd_0001.png" alt="Track outline to guess" />
-
       <div class="controls" id="controls">
-        <div class="controls-row" id="input-row">
+        <form class="controls-row" id="input-row" autocomplete="off" onsubmit="return false;">
           <label class="sr-only" for="guess">Track name</label>
           <input
             type="text"
@@ -269,10 +284,8 @@
             inputmode="text"
           />
           <button id="submit-btn" type="button">Submit</button>
-        </div>
-
+        </form>
         <datalist id="track-list"></datalist>
-
         <p id="result" role="status" aria-live="polite"></p>
         <button type="button" id="play-again-btn">🔁 Play Again</button>
       </div>
@@ -287,7 +300,6 @@
   <div id="credit">By MRAP12</div>
 
   <script>
-    // Track mapping and names (from your original list)
     const trackImages = [
       { name: "Mario Bros Circuit", img: "mkwd_0001.png" },
       { name: "Crown City", img: "mkwd_0002.png" },
@@ -323,18 +335,14 @@
       { name: "Rainbow Road", img: "mkwd_0032.png" }
     ];
 
-    // Build a valid track list with unique names (prevents duplicates like Crown City/Peach Stadium appearing twice)
     const validTracks = Array.from(new Set(trackImages.map(t => t.name)));
-
-    // Game state
     let answerIndex = Math.floor(Math.random() * trackImages.length);
     let answer = trackImages[answerIndex].name;
     let guessCount = 0;
     const MAX_GUESSES = 6;
     const STORAGE_KEY = 'mkwdGuesses';
-    let previousGuesses = []; // case-insensitive tracking
+    let previousGuesses = [];
 
-    // Elements
     const imgEl = document.getElementById('track-img');
     const guessEl = document.getElementById('guess');
     const resultEl = document.getElementById('result');
@@ -343,7 +351,6 @@
     const playAgainBtn = document.getElementById('play-again-btn');
     const inputRow = document.getElementById('input-row');
 
-    // Init
     document.addEventListener('DOMContentLoaded', () => {
       imgEl.src = 'images_mkwd/' + trackImages[answerIndex].img;
       populateDatalist();
@@ -355,8 +362,6 @@
     function wireEvents() {
       submitBtn.addEventListener('click', submitGuess);
       playAgainBtn.addEventListener('click', resetGame);
-
-      // Submit on Enter
       guessEl.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -376,7 +381,7 @@
     }
 
     function submitGuess() {
-      if (submitBtn.disabled) return; // ignore after end
+      if (submitBtn.disabled) return;
 
       const raw = guessEl.value.trim();
       const guess = raw;
@@ -433,30 +438,23 @@
       guessCount = stored.length;
       previousGuesses = stored.map(e => e.guess.toLowerCase());
 
-      // If a previous session ended, keep it ended
       if (stored.some(e => e.correct) || guessCount >= MAX_GUESSES) {
         endGame(stored.some(e => e.correct), { fromLoad: true });
       }
     }
 
     function endGame(won, opts = {}) {
-      // Reveal final answer if lost
       if (!won) {
         resultEl.textContent = `❌ Out of guesses! The answer was: ${answer}`;
       }
 
-      // Hide and disable input row + submit button
       submitBtn.disabled = true;
       guessEl.disabled = true;
       inputRow.style.display = 'none';
 
-      // Show Play Again
       playAgainBtn.style.display = 'inline-block';
-
-      // Ensure last elements are visible (avoid cutoff)
       document.body.style.paddingBottom = '5.5rem';
 
-      // Save a small marker so reloading preserves end state
       if (!opts.fromLoad) {
         const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
         localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));
@@ -464,12 +462,10 @@
     }
 
     function resetGame() {
-      // New answer
       answerIndex = Math.floor(Math.random() * trackImages.length);
       answer = trackImages[answerIndex].name;
       imgEl.src = 'images_mkwd/' + trackImages[answerIndex].img;
 
-      // Reset state
       guessCount = 0;
       previousGuesses = [];
       resultEl.textContent = '';
@@ -477,13 +473,10 @@
       guessEl.value = '';
       guessEl.disabled = false;
       submitBtn.disabled = false;
-      inputRow.style.display = 'grid';
+      inputRow.style.display = 'flex';
       playAgainBtn.style.display = 'none';
 
-      // Clear local history
       localStorage.removeItem(STORAGE_KEY);
-
-      // Restore padding (still leaves enough space)
       document.body.style.paddingBottom = '5rem';
 
       guessEl.focus();
@@ -491,4 +484,3 @@
   </script>
 </body>
 </html>
-
