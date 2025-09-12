@@ -2,7 +2,7 @@ NOTE:
 
 LATEST VERSION CONTAINS THE FOLLOWING ISSUES:
 - Issues with UI on mobile and other devices.
-- mkwd.html has major issues with UI.
+- Mario Kart: Double Dash!!'s images are too big.
 - Duplicate guesses.
 - Being able to guess when the game is over.
 - Mismatched UI.
