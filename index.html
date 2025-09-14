@@ -2,22 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="images/favicon.png">
-  <title>Guess the Mario Kart Track</title>
+  <link rel="icon" type="image/png" href="images_main/favicon_main.png">
+  <title>Main Page - Guess the Mario Kart track</title>
   <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
   <style>
-    body {
-      background-image: url('images/background.jpg');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      color: white;
-      font-family: 'Lexend', sans-serif;
-      text-align: center;
-      padding: 40px;
-      margin: 0;
+    html, body {
+      height: 100%;
     }
-    h1 { text-shadow: 2px 2px 4px #000; }
+
+    body {
+      margin: 0;
+      padding: 40px;
+      text-align: center;
+      font-family: 'Lexend', sans-serif;
+      color: white;
+      background: url('images_main/background_main.png') center/cover no-repeat;
+    }
+
+    h1 {
+      text-shadow: 2px 2px 4px #000;
+      margin-bottom: 30px;
+    }
+
     nav {
       position: sticky;
       top: 0;
@@ -29,6 +35,7 @@
       gap: 40px;
       font-size: 18px;
     }
+
     nav a {
       color: white;
       text-decoration: none;
@@ -37,267 +44,69 @@
       padding-bottom: 5px;
       border-bottom: 2px solid transparent;
     }
+
     nav a.active {
       border-bottom-color: white;
     }
-    img {
-      border: 0px solid white;
-      border-radius: 8px;
-      margin-top: 20px;
-      background: rgba(0,0,0,0.2);
-    }
-    input, button {
-      padding: 10px;
-      font-size: 16px;
-      margin-top: 20px;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: white;
-      border: 1px solid white;
-      border-radius: 5px;
-    }
-    #result {
-      margin-top: 20px;
-      font-size: 18px;
-      text-shadow: 1px 1px 2px #000;
-    }
-    #guess-history {
-      margin-top: 30px;
-      text-align: left;
-      max-width: 500px;
-      margin-left: auto;
-      margin-right: auto;
-      background-color: rgba(0, 0, 0, 0.4);
+
+    #update-box {
+      max-width: 600px;
+      margin: auto;
+      background: rgba(0,0,0,0.4);
       padding: 20px;
       border-radius: 10px;
+      text-align: left;
     }
-    #guess-history h3 {
+
+    #update-box h2 {
       margin-bottom: 10px;
+      text-shadow: 1px 1px 2px #000;
     }
-    #history-list {
-      list-style-type: none;
-      padding-left: 0;
+
+    #update-content {
+      white-space: pre-wrap;
+      font-size: 20px;
     }
-    #history-list li {
-      margin-bottom: 5px;
-      font-size: 16px;
-    }
-    .correct { color: lightgreen; }
-    .wrong { color: salmon; }
-    #play-again-btn {
-      display: none;
-      margin-top: 20px;
-      background-color: rgba(0, 128, 0, 0.5);
-      border: 1px solid white;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+
     #credit {
       position: fixed;
-      bottom: 10px;
       right: 15px;
+      bottom: 10px;
       font-size: 30px;
-      color: white;
-      opacity: 1;
-      font-family: 'Lexend', sans-serif;
       text-shadow: 1px 1px 2px #000;
+    }
+    .plan-img {
+      margin: 20px auto 0;
+      max-width: 380px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px #0006;
+      display: block;
     }
   </style>
 </head>
 <body>
   <nav>
     <a href="index.html" class="active">Main</a>
-    <a href="mkdd.html">Mario Kart: Double Dash!!</a>
     <a href="mk8deluxe.html">Mario Kart 8 Deluxe</a>
+    <a href="mkdd.html">Mario Kart: Double Dash!!</a>
     <a href="mkwd.html">Mario Kart World</a>
-    <a href="info.html">Update Plans</a>
+    <a href="info.html"
   </nav>
 
-  <h1>Guess the Mario Kart Track!</h1>
-  <!-- The track image will be set by JS -->
-  <img id="track-image" src="" alt="Track Outline" width="300">
+  <h1>Guess the Mario Kart track</h1>
 
-  <br><br>
-
-  <!-- Wrapped input + submit so we can hide them together on win -->
-  <div id="guess-container">
-    <input type="text" id="guess" placeholder="Enter your guess here..." list="track-list" autocomplete="on">
-    <datalist id="track-list"></datalist>
-    <br><br>
-    <button id="submit-btn" onclick="submitGuess()">Submit</button>
+  <div id="update-box">
+    <h2>Welcome</h2>
+    <div id="update-content">
+      Welcome to Guess the Mario Kart track!
   </div>
-
-  <p id="result"></p>
-  <button id="play-again-btn" onclick="resetGame()">🔁 Play Again</button>
-
-  <div id="guess-history">
-    <h3>Guesses:</h3>
-    <ul id="history-list"></ul>
   </div>
 
   <div id="credit">By MRAP12</div>
-
-  <script>
-    // Copy of your TRACKS dict from app.py
-    const TRACKS = {
-      'track0001.png': 'SNES Mario Circuit 1',
-      'track0002.png': 'SNES Donut Plains 1',
-      'track0003.png': 'SNES Ghost Valley 1',
-      'track0005.png': 'SNES Mario Circuit 2',
-      'track0006.png': 'SNES Choco Island 1',
-      'track0007.png': 'SNES Ghost Valley 2',
-      'track0008.png': 'SNES Donut Plains 2',
-      'track0010.png': 'SNES Mario Circuit 3',
-      'track0012.png': 'SNES Choco Island 2',
-      'track0013.png': 'SNES Vanilla Lake 1',
-      'track0017.png': 'SNES Koopa Beach 2',
-      'track0019.png': 'SNES Vanilla Lake 2',
-      'track0020.png': 'SNES Rainbow Road',
-      'track0021.png': 'N64 Luigi Raceway',
-      'track0023.png': 'N64 Koopa Troopa Beach',
-      'track0024.png': 'N64 Kalimari Desert',
-      'track0026.png': 'N64 Frappe Snowland',
-      'track0027.png': 'N64 Choco Mountain',
-      'track0028.png': 'N64 Mario Raceway',
-      'track0031.png': 'N64 Royal Raceway',
-      'track0034.png': 'N64 Yoshi Valley',
-      'track0037.png': 'GBA Peach Circuit',
-      'track0039.png': 'GBA Riverside Park',
-      'track0040.png': 'GBA Bowser Castle 1',
-      'track0042.png': 'GBA Boo Lake',
-      'track0044.png': 'GBA Bowser Castle 2',
-      'track0045.png': 'GBA Luigi Circuit',
-      'track0046.png': 'GBA Sky Garden',
-      'track0047.png': 'GBA Cheep-Cheep Island',
-      'track0048.png': 'GBA Sunset Wilds',
-      'track0049.png': 'GBA Snow Land',
-      'track0051.png': 'GBA Yoshi Desert',
-      'track0052.png': 'GBA Bowser Castle 3',
-      'track0053.png': 'GBA Lakeside Park',
-      'track0055.png': 'GBA Bowser Castle 4',
-      'track0059.png': 'GCN Baby Park',
-      'track0061.png': 'GCN Mushroom Bridge',
-      'track0063.png': 'GCN Daisy Cruiser',
-      'track0064.png': 'GCN Waluigi Stadium',
-      'track0067.png': 'GCN Yoshi Circuit',
-    };
-
-    // Turn TRACKS into an array of image filenames
-    const trackImages = Object.keys(TRACKS);
-    const trackNames = Object.values(TRACKS);
-
-    let currentTrackImage = "";
-    let currentTrackName = "";
-    let guessCount = 0;
-    const MAX_GUESSES = 6;
-
-    function randomTrack() {
-      const idx = Math.floor(Math.random() * trackImages.length);
-      currentTrackImage = trackImages[idx];
-      currentTrackName = TRACKS[currentTrackImage];
-      document.getElementById('track-image').src = "images/" + currentTrackImage;
-    }
-
-    function populateDatalist() {
-      const datalist = document.getElementById('track-list');
-      datalist.innerHTML = '';
-      trackNames.forEach(track => {
-        const option = document.createElement('option');
-        option.value = track;
-        datalist.appendChild(option);
-      });
-    }
-
-    function submitGuess() {
-      if (guessCount >= MAX_GUESSES) {
-        alert("❌ You've reached the maximum number of guesses!");
-        return;
-      }
-
-      const guessInput = document.getElementById('guess');
-      const guess = guessInput.value.trim();
-
-      if (!trackNames.includes(guess)) {
-        alert("❌ Invalid track name. Please choose a valid Mario Kart track.");
-        return;
-      }
-
-      const correct = (guess === currentTrackName);
-
-      document.getElementById('result').innerText = correct
-        ? "✅ Correct! It's " + currentTrackName
-        : "❌ Wrong guess. Try again!";
-
-      guessCount++;
-      addToHistory(guess, correct);
-
-      if (correct) {
-        // Hide the input + submit button once the player wins
-        document.getElementById('guess-container').style.display = 'none';
-        document.getElementById('play-again-btn').style.display = 'inline-block';
-        return;
-      }
-
-      if (guessCount >= MAX_GUESSES) {
-        document.getElementById('play-again-btn').style.display = 'inline-block';
-      }
-
-      guessInput.value = '';
-    }
-
-    function addToHistory(guess, isCorrect) {
-      const historyList = document.getElementById('history-list');
-      const li = document.createElement('li');
-      li.textContent = `Guess ${guessCount}: ${guess} ${isCorrect ? "✅" : "❌"}`;
-      li.className = isCorrect ? 'correct' : 'wrong';
-      historyList.appendChild(li);
-
-      const stored = JSON.parse(localStorage.getItem('mkGuesses') || '[]');
-      stored.push({ guess, correct: isCorrect, number: guessCount });
-      localStorage.setItem('mkGuesses', JSON.stringify(stored));
-    }
-
-    function loadHistory() {
-      const stored = JSON.parse(localStorage.getItem('mkGuesses') || '[]');
-      const historyList = document.getElementById('history-list');
-      historyList.innerHTML = '';
-      stored.forEach(entry => {
-        const li = document.createElement('li');
-        li.textContent = `Guess ${entry.number}: ${entry.guess} ${entry.correct ? "✅" : "❌"}`;
-        li.className = entry.correct ? 'correct' : 'wrong';
-        historyList.appendChild(li);
-      });
-    }
-
-    function resetGame() {
-      guessCount = 0;
-      localStorage.removeItem('mkGuesses');
-      document.getElementById('history-list').innerHTML = '';
-      document.getElementById('result').innerText = '';
-      document.getElementById('play-again-btn').style.display = 'none';
-      // Show the input + submit again for the new round
-      document.getElementById('guess-container').style.display = 'block';
-      // Clear any lingering input value
-      const guessInput = document.getElementById('guess');
-      if (guessInput) guessInput.value = '';
-      randomTrack();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      guessCount = 0;
-      loadHistory();
-      populateDatalist();
-      document.getElementById('play-again-btn').style.display = 'none';
-      document.getElementById('result').innerText = '';
-      document.getElementById('history-list').innerHTML = '';
-      // Ensure input is visible on initial load
-      document.getElementById('guess-container').style.display = 'block';
-      randomTrack();
-    });
-  </script>
 </body>
 </html>
+
+
 
 
 
