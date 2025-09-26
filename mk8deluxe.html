@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="images2/favicon2.png">
+  <link rel="icon" type="image/png" href="images_mk8deluxe/favicon_mk8deluxe.png">
   <title>MK8 Deluxe Track Guesser</title>
   <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
   <style>
@@ -12,7 +12,7 @@
       text-align: center;
       font-family: 'Lexend', sans-serif;
       color: white;
-      background: url('images2/background.jpg') center/cover no-repeat;
+      background: url('images_mk8deluxe/background.png') center/cover no-repeat;
     }
 
     h1 {
@@ -122,14 +122,16 @@
 <body>
   <nav>
     <a href="index.html">Main</a>
-    <a href="mkdd.html">Mario Kart: Double Dash!!</a>
-    <a href="mk8deluxe.html" class="active">Mario Kart 8 Deluxe</a>
-    <a href="mkwd.html">Mario Kart World</a>    
+    <a href="mkwd.html">Mario Kart World</a>
     <a href="info.html">Update Plans</a>
+    <a href="mkdd.html">Mario Kart: Double Dash!! (UI Issues)</a>
+    <a href="mk8deluxe.html" class="active">MK8DX (Broken)</a>
+        
+    
   </nav>
 
   <h1>Guess the MK8 Deluxe Track!</h1>
-  <img id="track-img" src="images2/mk8_0001.png" alt="Track Outline" width="300">
+  <img id="track-img" src="images_mk8deluxe/mk8_0001.png" alt="Track Outline" width="300">
 
   <br><br>
 
@@ -241,7 +243,7 @@
     const STORAGE_KEY = 'mk8dGuesses';
 
     document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('track-img').src = 'images2/' + trackImages[answerIndex].img;
+      document.getElementById('track-img').src = 'images_mk8deluxe/' + trackImages[answerIndex].img;
       loadHistory();
       populateDatalist();
       // Ensure inputs are visible at start
@@ -321,7 +323,7 @@
     function resetGame() {
       answerIndex = Math.floor(Math.random() * trackImages.length);
       answer = trackImages[answerIndex].name;
-      document.getElementById('track-img').src = 'images2/' + trackImages[answerIndex].img;
+      document.getElementById('track-img').src = 'images_mk8deluxe/' + trackImages[answerIndex].img;
       guessCount = 0;
       localStorage.removeItem(STORAGE_KEY);
       document.getElementById('history-list').innerHTML = '';
@@ -334,6 +336,7 @@
   </script>
 </body>
 </html>
+
 
 
 
