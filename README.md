@@ -1,2 +1,3 @@
-LATEST VERSION LACKS UPDATED HTML FILES. WILL BE FIXED BY OCTOBER 2025.
-Sorry for the inconvenience.
+Latest version 2025-09-26:
+
+*Attempted to create a temporary index.html file.
