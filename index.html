@@ -7,50 +7,99 @@
   <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
   <style>
     body {
-      background-image: url('images_main/background_main.png');
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
-      color: white;
-      font-family: 'Lexend', sans-serif;
-      text-align: center;
-      padding: 40px;
       margin: 0;
+      font-family: 'Lexend', sans-serif;
+      color: #fff;
+      background: url('images_main/background_main.png') center/cover no-repeat fixed;
+      position: relative;
     }
-    h1 { 
-      text-shadow: 2px 2px 4px #000; 
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: -1;
     }
+
     nav {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0,0,0,0.8);
       padding: 15px 0;
       display: flex;
       justify-content: center;
       gap: 40px;
       font-size: 18px;
+      backdrop-filter: blur(6px);
     }
+
     nav a {
       color: white;
       text-decoration: none;
       font-weight: bold;
-      text-shadow: 1px 1px 2px #000;
       padding-bottom: 5px;
       border-bottom: 2px solid transparent;
+      transition: border-color 0.3s, color 0.3s;
     }
+
+    nav a:hover {
+      color: #ffd700;
+      border-bottom-color: #ffd700;
+    }
+
     nav a.active {
       border-bottom-color: white;
     }
+
+    .content {
+      max-width: 800px;
+      margin: 80px auto;
+      background: rgba(255,255,255,0.1);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    h1 {
+      text-shadow: 2px 2px 6px #000;
+      margin-bottom: 20px;
+    }
+
+    .intro-box {
+      margin-top: 30px;
+      background: rgba(0,0,0,0.6);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .intro-box p {
+      margin-bottom: 15px;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    .social-links a {
+      margin: 0 10px;
+      color: #ffd700;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    .social-links a:hover {
+      color: #fff;
+    }
+
     #credit {
       position: fixed;
       bottom: 10px;
       right: 15px;
-      font-size: 30px;
-      color: white;
-      opacity: 1;
-      font-family: 'Lexend', sans-serif;
-      text-shadow: 1px 1px 2px #000;
+      font-size: 16px;
+      opacity: 0.8;
     }
   </style>
 </head>
@@ -63,7 +112,20 @@
     <a href="info.html">Update Plans</a>
   </nav>
 
-  <h1>Welcome to guess the Mario Kart track!</h1>
+  <div class="content">
+    <h1>Welcome to guess the Mario Kart track!</h1>
+
+    <!-- New intro box -->
+    <div class="intro-box">
+      <p>Hey there! This project is all about testing your Mario Kart knowledge.  
+      Pick a game above and see if you can guess the tracks correctly!</p>
+      <div class="social-links">
+        <a href="https://wiki.tockdom.com/User:MRAP12" target="_blank">Tockdom</a> |
+        <a href="https://gamebanana.com/members/4620687" target="_blank">GameBanana</a> |
+        <a href="https://www.zeldadungeon.net/wiki/User:MRAP12" target="_blank">ZeldaDungeon</a>
+      </div>
+    </div>
+  </div>
 
   <div id="credit">By MRAP12</div>
 </body>
